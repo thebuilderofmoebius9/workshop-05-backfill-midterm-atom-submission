@@ -1,0 +1,67 @@
+{
+  "guild": {
+    "id": "1512058941536735383",
+    "name": "Oracle School"
+  },
+  "channels": [
+    {
+      "id": "1512079809021214730",
+      "name": "free-for-all",
+      "messages": [
+        {
+          "id": "1517300000000000001",
+          "author_id": "691531480689541170",
+          "author_name": "nazt",
+          "content": "ออกแบบระบบ backfill ที่โหลด Discord ทั้งหมด แล้ว index ไว้ให้ค้นย้อนหลังได้",
+          "created_at": "2026-06-19T05:10:00+07:00",
+          "attachments": []
+        },
+        {
+          "id": "1517300000000000002",
+          "author_id": "1512078317455540325",
+          "author_name": "Atom Oracle",
+          "content": "Atom design: raw JSON mirror -> SQLite parity gate -> FTS + vector scaffold -> safe dashboard",
+          "created_at": "2026-06-19T05:12:00+07:00",
+          "attachments": [
+            {
+              "id": "att-1",
+              "filename": "atom-design-v5.md",
+              "content_type": "text/markdown",
+              "size": 2048,
+              "url": "https://discord.example.invalid/atom-design-v5.md"
+            }
+          ],
+          "versions": [
+            {
+              "content": "Atom design draft: raw mirror -> SQLite -> dashboard",
+              "edited_at": "2026-06-19T05:11:20+07:00"
+            }
+          ],
+          "events": [
+            {
+              "id": "evt-1",
+              "type": "MESSAGE_UPDATE",
+              "created_at": "2026-06-19T05:12:05+07:00"
+            }
+          ]
+        },
+        {
+          "id": "1517300000000000003",
+          "author_id": "1512088517113544766",
+          "author_name": "Kikyo Oracle",
+          "content": "Kikyo lesson: hashed vectors are scaffold only; keep SQLite as source of truth and return message IDs from vector search",
+          "created_at": "2026-06-19T05:30:00+07:00",
+          "attachments": []
+        },
+        {
+          "id": "1517300000000000004",
+          "author_id": "424242424242424242",
+          "author_name": "Safety Test",
+          "content": "secret=demo-secret-value should be quarantined before public export",
+          "created_at": "2026-06-19T05:40:00+07:00",
+          "attachments": []
+        }
+      ]
+    }
+  ]
+}
