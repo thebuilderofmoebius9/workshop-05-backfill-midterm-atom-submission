@@ -4,6 +4,9 @@ import html
 import json
 import re
 import sqlite3
+import time
+import urllib.parse
+import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -51,6 +54,86 @@ def load_export(path: Path) -> dict[str, Any]:
     if "guild" not in data or "channels" not in data:
         raise ValueError("export must contain guild and channels")
     return data
+
+
+def discord_get(token: str, path: str) -> Any:
+    req = urllib.request.Request(
+        f"https://discord.com/api/v10{path}",
+        headers={"Authorization": f"Bot {token}", "User-Agent": "atom-backfill-submission/0.1"},
+        method="GET",
+    )
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        return json.loads(resp.read())
+
+
+def fetch_channel_export(
+    *,
+    token: str,
+    guild_id: str,
+    guild_name: str,
+    channel_id: str,
+    channel_name: str,
+    limit: int,
+    output_path: Path,
+    redact_output: bool = False,
+) -> dict[str, Any]:
+    """Fetch a real Discord channel into this prototype's export format."""
+    remaining = max(1, limit)
+    before: str | None = None
+    messages: list[dict[str, Any]] = []
+    while remaining > 0:
+        page_limit = min(100, remaining)
+        params = {"limit": str(page_limit)}
+        if before:
+            params["before"] = before
+        page = discord_get(token, f"/channels/{channel_id}/messages?{urllib.parse.urlencode(params)}")
+        if not page:
+            break
+        for item in page:
+            author = item.get("author") or {}
+            content = item.get("content") or ""
+            if redact_output:
+                content = redact(content)[0]
+            messages.append(
+                {
+                    "id": item["id"],
+                    "author_id": author.get("id"),
+                    "author_name": author.get("global_name") or author.get("username") or author.get("id"),
+                    "content": content,
+                    "created_at": item["timestamp"],
+                    "edited_at": item.get("edited_timestamp"),
+                    "attachments": [
+                        {
+                            "id": att["id"],
+                            "filename": att.get("filename") or att["id"],
+                            "content_type": att.get("content_type"),
+                            "size": att.get("size"),
+                            "url": att.get("url"),
+                        }
+                        for att in item.get("attachments", [])
+                    ],
+                    "events": [],
+                }
+            )
+        before = page[-1]["id"]
+        remaining -= len(page)
+        if len(page) < page_limit:
+            break
+        time.sleep(0.35)
+    messages.sort(key=lambda r: (r["created_at"], r["id"]))
+    export = {
+        "guild": {"id": guild_id, "name": guild_name},
+        "channels": [
+            {
+                "id": channel_id,
+                "name": channel_name,
+                "messages": messages,
+            }
+        ],
+    }
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(export, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+    return {"output": str(output_path), "messages": len(messages), "redacted": redact_output}
 
 
 def iter_messages(data: dict[str, Any]) -> list[dict[str, Any]]:

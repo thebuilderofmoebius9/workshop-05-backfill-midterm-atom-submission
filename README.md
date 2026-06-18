@@ -26,8 +26,18 @@ SQLite, and a generated static HTML dashboard.
 ## Run
 
 ```bash
+export DISCORD_BOT_TOKEN=...
+python3 -m discord_backfill.cli fetch-discord \
+  --guild-id 1512058941536735383 \
+  --guild-name "Oracle School" \
+  --channel-id 1512079809021214730 \
+  --channel-name "free-for-all" \
+  --limit 100 \
+  --redact \
+  --output samples/oracle-school-free-for-all-real.json
+
 python3 -m discord_backfill.cli backfill \
-  --input samples/discord-export.json \
+  --input samples/oracle-school-free-for-all-real.json \
   --mirror out/mirror \
   --db out/atom-backfill.sqlite \
   --dashboard out/dashboard.html

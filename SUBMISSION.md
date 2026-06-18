@@ -4,6 +4,7 @@
 
 A runnable Discord backfill and indexing prototype:
 
+- fetches real Discord room data with `DISCORD_BOT_TOKEN`
 - loads a Discord export JSON file
 - writes a raw JSONL mirror
 - imports into SQLite/WAL
@@ -18,18 +19,20 @@ Commands run:
 
 ```bash
 make test
-make screenshot
-python3 -m discord_backfill.cli search --db out/atom-backfill.sqlite Kikyo
+make fetch-real
+make screenshot-real
+python3 -m discord_backfill.cli search --db out/atom-real-backfill.sqlite backfill
 ```
 
 Results:
 
 - Unit tests: 4 passed, 0 failed
-- Backfill: 1 channel, 4 messages, 1 version, 1 attachment, 1 event, 1 quarantine hit
-- Parity gate: raw=4, db=4, missing=0, extra=0
-- Screenshot: `artifacts/dashboard.png`
+- Real room fetch: 100 messages from Oracle School `#free-for-all`
+- Real room backfill: 1 channel, 100 messages, 8 attachments
+- Parity gate: raw=100, db=100, missing=0, extra=0
+- Screenshot: `artifacts/real-dashboard.png`
 
-![Atom Discord Backfill Dashboard](artifacts/dashboard.png)
+![Atom Discord Backfill Dashboard](artifacts/real-dashboard.png)
 
 ## Why This Is Better After Learning From Kikyo
 
